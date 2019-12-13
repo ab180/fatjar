@@ -1,0 +1,44 @@
+plugins {
+    id "com.gradle.plugin-publish" version "0.10.1"
+    id "java-gradle-plugin"
+    id "groovy"
+}
+
+group "co.ab180.fatjar"
+version "0.0.1"
+
+sourceCompatibility = 1.8
+
+gradlePlugin {
+    plugins {
+        fatjarPlugin {
+            id = "co.ab180.fatjar"
+            implementationClass = "co.ab180.fatjar.FatJarPlugin"
+        }
+    }
+}
+
+pluginBundle {
+    website = "https://github.com/ab180"
+    vcsUrl = "https://github.com/ab180/fat-jar"
+    description = "Fat jar gradle plugin for Android"
+    tags = ["fatjar"]
+
+    plugins {
+        fatjarPlugin {
+            // id is captured from java-gradle-plugin configuration
+            displayName = "Fat jar gradle plugin"
+        }
+    }
+}
+
+repositories {
+    jcenter()
+    google()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation "com.android.tools.build:gradle:3.4.1"
+}
