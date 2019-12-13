@@ -26,7 +26,6 @@ class FatJarPlugin implements Plugin<Project> {
         configuration = createConfiguration(project)
         project.afterEvaluate {
             resolvedArtifacts = findAllResolvedArtifacts(configuration)
-
             project.android.libraryVariants.all { variant ->
                 FatJarProcessor processor = new FatJarProcessor(project, variant, resolvedArtifacts)
                 processor.process()

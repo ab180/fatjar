@@ -21,6 +21,14 @@ class FatJarProcessor {
                 this.jarFiles.add(file)
             }
         }
+
+
+
+        project.rootProject.buildscript.getConfigurations().getByName("classpath").getDependencies().each { dependency ->
+            if (dependency.group == "com.android.tools.build" && dependency.name == "gradle") {
+
+            }
+        }
     }
 
     void process() {
@@ -29,12 +37,8 @@ class FatJarProcessor {
             throw new RuntimeException("Task not found :: preBuildTask")
         }
 
-        Task bundleTask = TaskUtils.findBundleTask(variant)
-        if (bundleTask == null) {
-            throw new RuntimeException("Task not found :: bundleTask")
-        }
-
         clearCache()
+        buildClassesWithJars()
     }
 
     private void clearCache() {
@@ -42,17 +46,17 @@ class FatJarProcessor {
         FileUtils.createClassesDirFile(project, variant).deleteDir()
     }
 
-    private void buildClassesWithJars(Task bundleTask) {
+    private void buildClassesWithJars() {
         Task syncLibJarsTask = TaskUtils.findTransformClassesAndResourcesWithSyncLibJars(variant)
         if (syncLibJarsTask == null) {
             throw new RuntimeException("Task not found :: transformClassesAndResourcesWithSyncLibJarsTask")
         }
 
         Task javaCompileTask = TaskUtils.findJavaCompileTask(variant)
-        Task classesMergeTask = TaskUtils.createClassesMergeTask(project, variant, jarFiles)
+        Task mergeClassesTask = TaskUtils.createMergeClassesTask(project, variant, jarFiles)
 
         // Create task dependency
-        syncLibJarsTask.dependsOn(classesMergeTask)
-        classesMergeTask.dependsOn(javaCompileTask)
+        syncLibJarsTask.dependsOn(mergeClassesTask)
+        mergeClassesTask.dependsOn(javaCompileTask)
     }
 }

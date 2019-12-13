@@ -53,12 +53,12 @@ class TaskUtils {
         return variant.getJavaCompileProvider().get()
     }
 
-    static Task createClassesMergeTask(Project project, LibraryVariant variant, List<File> jarFiles) {
+    static Task createMergeClassesTask(Project project, LibraryVariant variant, List<File> jarFiles) {
         Task task = project.tasks.create("mergeClasses${variant.name.capitalize()}")
         task.doFirst {
             File classesDir = FileUtils.createClassesDirFile(project, variant)
+
             for (jarFile in jarFiles) {
-                LoggingUtils.info("%s copy to %s", jarFile.path, classesDir.path)
                 project.copy {
                     from project.zipTree(jarFile)
                     into classesDir

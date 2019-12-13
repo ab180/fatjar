@@ -17,6 +17,6 @@ class PathUtils {
     }
 
     static String transformClassesAndResourcesWithSyncLibJarsTask(LibraryVariant variant) {
-        return "transformClassesAndResourcesWithSyncLibJarsTaskFor${variant.name.capitalize()}"
+        return "transformClassesAndResourcesWithSyncLibJarsFor${variant.name.capitalize()}"
     }
 }
