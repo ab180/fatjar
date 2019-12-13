@@ -24,10 +24,11 @@ class FatJarPlugin implements Plugin<Project> {
         TaskUtils.init(project)
         validateAndroidPluginIncluded(project)
         configuration = createConfiguration(project)
-        resolvedArtifacts = findAllResolvedArtifacts(configuration)
         project.afterEvaluate {
+            resolvedArtifacts = findAllResolvedArtifacts(configuration)
+
             project.android.libraryVariants.all { variant ->
-                FatJarProcessor processor = new FatJarProcessor(variant, resolvedArtifacts, resolvedArtifacts)
+                FatJarProcessor processor = new FatJarProcessor(project, variant, resolvedArtifacts)
                 processor.process()
             }
         }
@@ -40,22 +41,7 @@ class FatJarPlugin implements Plugin<Project> {
     }
 
     private static Configuration createConfiguration(Project project) {
-        Configuration config = project.configurations.create(CONFIGURATION_NAME)
-
-        project.gradle.addListener(new DependencyResolutionListener() {
-            @Override
-            void beforeResolve(ResolvableDependencies resolvableDependencies) {
-                config.dependencies.each {dependency ->
-                    project.dependencies.add(COMPILE_ONLY, dependency)
-                }
-                project.gradle.removeListener(this)
-            }
-
-            @Override
-            void afterResolve(ResolvableDependencies resolvableDependencies) { }
-        })
-
-        return config
+        return project.configurations.create(CONFIGURATION_NAME)
     }
 
     private static List<ResolvedArtifact> findAllResolvedArtifacts(Configuration configuration) {
