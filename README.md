@@ -43,3 +43,18 @@ dependencies {
 ```
 
 > FatJar currently support `.jar` extension under the `com.android.library` plugin only
+
+## TODO
+
+- Apply [jarjar][1] library
+
+## Thanks
+
+- [android-fat-aar][2]
+- [fat-aar-plugin][3]
+- [fat-aar-android][4]
+
+[1]: https://code.google.com/archive/p/jarjar/
+[2]: https://github.com/adwiv/android-fat-aar
+[3]: https://github.com/Vigi0303/fat-aar-plugin
+[4]: https://github.com/kezong/fat-aar-android
