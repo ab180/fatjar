@@ -24,7 +24,17 @@ class FatJarProcessor {
 
         project.rootProject.buildscript.getConfigurations().getByName("classpath").getDependencies().each { dependency ->
             if (dependency.group == "com.android.tools.build" && dependency.name == "gradle") {
+                String[] versionSplits = dependency.version.split("[._]")
+                Integer major = versionSplits[0].toInteger()
+                Integer minor = versionSplits[1].toInteger()
 
+                if (major < 3) {
+                    throw new RuntimeException("FatJar only support 'com.android.tools.build' version above 3.5.0")
+                } else {
+                    if (minor < 5) {
+                        throw new RuntimeException("FatJar only support 'com.android.tools.build' version above 3.5.0")
+                    }
+                }
             }
         }
     }
