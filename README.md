@@ -46,15 +46,16 @@ dependencies {
 
 ## TODO
 
-- Apply [jarjar][1] library
+- Mixing [JarJar][1] library inside like [ShadowJar][2]
 
 ## Thanks
 
-- [android-fat-aar][2]
-- [fat-aar-plugin][3]
-- [fat-aar-android][4]
+- [android-fat-aar][3]
+- [fat-aar-plugin][4]
+- [fat-aar-android][5]
 
-[1]: https://code.google.com/archive/p/jarjar/
-[2]: https://github.com/adwiv/android-fat-aar
-[3]: https://github.com/Vigi0303/fat-aar-plugin
-[4]: https://github.com/kezong/fat-aar-android
+[1]: https://code.google.com/archive/p/jarjar
+[2]: https://github.com/johnrengelman/shadow
+[3]: https://github.com/adwiv/android-fat-aar
+[4]: https://github.com/Vigi0303/fat-aar-plugin
+[5]: https://github.com/kezong/fat-aar-android
