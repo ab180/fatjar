@@ -12,7 +12,7 @@ Add snippet below to your root build script file:
 buildscript {
     repositories {
         maven {
-            url uri("/Users/wontak/Desktop/plugins")
+            url "https://dl.bintray.com/ab180/gradle-plugin"
         }
     }
     dependencies {
