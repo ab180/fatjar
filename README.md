@@ -42,4 +42,4 @@ dependencies {
 }
 ```
 
-> FatJar currently only support `.jar` extension under the `com.android.library` plugin
+> FatJar currently support `.jar` extension under the `com.android.library` plugin only
