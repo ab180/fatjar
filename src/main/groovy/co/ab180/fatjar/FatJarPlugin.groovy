@@ -4,6 +4,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
 import org.gradle.api.artifacts.ResolvedArtifact
 
 class FatJarPlugin implements Plugin<Project> {
@@ -11,6 +13,7 @@ class FatJarPlugin implements Plugin<Project> {
     private static final String ANDROID_LIBRARY_PLUGIN_NAME = "com.android.library"
     private static final String CONFIGURATION_NAME = "internalize"
     private static final String ARTIFACT_TYPE_JAR = "jar"
+    private static final String COMPILE_ONLY = "compileOnly"
 
     private Configuration configuration
     private List<ResolvedArtifact> resolvedArtifacts
@@ -21,6 +24,7 @@ class FatJarPlugin implements Plugin<Project> {
         TaskUtils.init(project)
         validateAndroidPluginIncluded(project)
         configuration = createConfiguration(project)
+        buildCompileOnlyDependencies(project, configuration)
         project.afterEvaluate {
             resolvedArtifacts = findAllResolvedArtifacts(configuration)
             project.android.libraryVariants.all { variant ->
@@ -40,11 +44,27 @@ class FatJarPlugin implements Plugin<Project> {
         return project.configurations.create(CONFIGURATION_NAME)
     }
 
+    private static void buildCompileOnlyDependencies(Project project, Configuration config) {
+        project.gradle.addListener(new DependencyResolutionListener() {
+            @Override
+            void beforeResolve(ResolvableDependencies dependencies) {
+                // Add compileOnly artifact for IDE
+                config.dependencies.each { dependency ->
+                    project.dependencies.add(COMPILE_ONLY, dependency)
+                }
+                project.gradle.removeListener(this)
+            }
+
+            @Override
+            void afterResolve(ResolvableDependencies dependencies) { }
+        })
+    }
+
     private static List<ResolvedArtifact> findAllResolvedArtifacts(Configuration configuration) {
         List<ResolvedArtifact> resolvedArtifacts = new ArrayList<>()
         configuration.resolvedConfiguration.resolvedArtifacts.each { artifact ->
             if (artifact.type == ARTIFACT_TYPE_JAR) {
-                LoggingUtils.println("[internalize detected] ${artifact.type} - ${artifact.moduleVersion.id}")
+                LoggingUtils.println("[Artifact] ${artifact.moduleVersion.id}")
             } else {
                 throw new ProjectConfigurationException("Not supported artifact type detected : ${artifact.type}", null)
             }

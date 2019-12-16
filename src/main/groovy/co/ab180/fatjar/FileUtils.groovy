@@ -18,4 +18,9 @@ class FileUtils {
         String path = "${project.buildDir.path}/$INTERMEDIATES/$JAVAC/${variant.dirName}/classes"
         return project.file(path)
     }
+
+    static File createJarsDirFile(Project project, LibraryVariant variant) {
+        String path = "${project.buildDir.path}/$INTERMEDIATES/$PACKAGED_CLASSES/${variant.dirName}/libs"
+        return project.file(path)
+    }
 }

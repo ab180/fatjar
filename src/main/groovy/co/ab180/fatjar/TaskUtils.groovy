@@ -57,12 +57,27 @@ class TaskUtils {
         Task task = project.tasks.create("mergeClasses${variant.name.capitalize()}")
         task.doFirst {
             File classesDir = FileUtils.createClassesDirFile(project, variant)
-
             for (jarFile in jarFiles) {
                 project.copy {
+                    LoggingUtils.println("Copy '${jarFile.path}' to '${classesDir.path}'")
                     from project.zipTree(jarFile)
                     into classesDir
                     exclude "META-INF/"
+                }
+            }
+        }
+        return task
+    }
+
+    static Task createMergeJarsTask(Project project, LibraryVariant variant, List<File> jarFiles) {
+        Task task = project.tasks.create("mergeJars${variant.name.capitalize()}")
+        task.doFirst {
+            File libsDir = FileUtils.createLibsDirFile(project, variant)
+            for (jarFile in jarFiles) {
+                project.copy {
+                    LoggingUtils.println("Copy '${jarFile.path}' to '${libsDir.path}'")
+                    from jarFile
+                    into libsDir
                 }
             }
         }
