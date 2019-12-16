@@ -4,8 +4,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.DependencyResolutionListener
-import org.gradle.api.artifacts.ResolvableDependencies
 import org.gradle.api.artifacts.ResolvedArtifact
 
 class FatJarPlugin implements Plugin<Project> {
@@ -13,7 +11,6 @@ class FatJarPlugin implements Plugin<Project> {
     private static final String ANDROID_LIBRARY_PLUGIN_NAME = "com.android.library"
     private static final String CONFIGURATION_NAME = "internalize"
     private static final String ARTIFACT_TYPE_JAR = "jar"
-    private static final String COMPILE_ONLY = "compileOnly"
 
     private Configuration configuration
     private List<ResolvedArtifact> resolvedArtifacts
@@ -35,7 +32,7 @@ class FatJarPlugin implements Plugin<Project> {
 
     private static void validateAndroidPluginIncluded(Project project) {
         if (!project.plugins.hasPlugin(ANDROID_LIBRARY_PLUGIN_NAME)) {
-            throw new ProjectConfigurationException("Fat-Jar plugin must contain android library plugin", null)
+            throw new ProjectConfigurationException("FatJar plugin must contain android library plugin", null)
         }
     }
 

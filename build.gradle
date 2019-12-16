@@ -1,44 +1,57 @@
-plugins {
-    id "com.gradle.plugin-publish" version "0.10.1"
-    id "java-gradle-plugin"
-    id "groovy"
-}
+apply plugin: "groovy"
+apply plugin: "maven"
+apply plugin: "com.novoda.bintray-release"
 
-group "co.ab180.fatjar"
-version "0.0.1"
+def versionName = "0.0.1"
+def pomGroupId = "co.ab180"
+def pomArtifactId = "fatjar"
 
 sourceCompatibility = 1.8
 
-gradlePlugin {
-    plugins {
-        fatjarPlugin {
-            id = "co.ab180.fatjar"
-            implementationClass = "co.ab180.fatjar.FatJarPlugin"
-        }
+buildscript {
+    repositories {
+        jcenter()
     }
-}
-
-pluginBundle {
-    website = "https://github.com/ab180"
-    vcsUrl = "https://github.com/ab180/fat-jar"
-    description = "Fat jar gradle plugin for Android"
-    tags = ["fatjar"]
-
-    plugins {
-        fatjarPlugin {
-            // id is captured from java-gradle-plugin configuration
-            displayName = "Fat jar gradle plugin"
-        }
+    dependencies {
+        classpath "com.novoda:bintray-release:0.9.2"
     }
 }
 
 repositories {
     jcenter()
     google()
+    mavenCentral()
 }
 
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
     implementation "com.android.tools.build:gradle:3.4.1"
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri("$rootDir/mavenlocal"))
+            pom {
+                groupId = pomGroupId
+                artifactId = pomArtifactId
+                version = versionName
+            }
+        }
+    }
+}
+
+publish {
+    autoPublish = true
+    // Bintray repo settings
+    userOrg = "ab180"
+    repoName = "gradle-plugin"
+    uploadName = "fatjar"
+    publishVersion = versionName
+    desc = "Gradle Fatjar Plugin"
+    website = "https://github.com/ab180/fat-jar"
+    // POM settings
+    groupId = pomGroupId
+    artifactId = pomArtifactId
 }

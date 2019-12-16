@@ -22,8 +22,6 @@ class FatJarProcessor {
             }
         }
 
-
-
         project.rootProject.buildscript.getConfigurations().getByName("classpath").getDependencies().each { dependency ->
             if (dependency.group == "com.android.tools.build" && dependency.name == "gradle") {
 

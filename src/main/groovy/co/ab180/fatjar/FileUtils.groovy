@@ -2,7 +2,6 @@ package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
 import org.gradle.api.Project
-import org.gradle.api.file.ConfigurableFileCollection
 
 class FileUtils {
 
