@@ -23,4 +23,13 @@ class FileUtils {
         String path = "${project.buildDir.path}/$INTERMEDIATES/$PACKAGED_CLASSES/${variant.dirName}/libs"
         return project.file(path)
     }
+
+    static String getFileExtension(File file) {
+        String name = file.getName()
+        int lastIndexOf = name.lastIndexOf(".")
+        if (lastIndexOf == -1) {
+            return "" // empty extension
+        }
+        return name.substring(lastIndexOf + 1)
+    }
 }

@@ -11,10 +11,10 @@ class FatJarProcessor {
     private LibraryVariant variant
     private List<File> jarFiles
 
-    FatJarProcessor(Project project, LibraryVariant variant, List<ResolvedArtifact> resolvedArtifacts) {
+    FatJarProcessor(Project project, LibraryVariant variant, List<ResolvedArtifact> resolvedArtifacts, List<File> resolvedFiles) {
         this.project = project
         this.variant = variant
-        this.jarFiles = new ArrayList<>()
+        this.jarFiles = new ArrayList<>(resolvedFiles)
         for (artifact in resolvedArtifacts) {
             File file = artifact.file
             if (file.exists()) {

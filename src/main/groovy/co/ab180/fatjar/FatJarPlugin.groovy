@@ -3,20 +3,18 @@ package co.ab180.fatjar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.DependencyResolutionListener
-import org.gradle.api.artifacts.ResolvableDependencies
-import org.gradle.api.artifacts.ResolvedArtifact
+import org.gradle.api.artifacts.*
 
 class FatJarPlugin implements Plugin<Project> {
 
     private static final String ANDROID_LIBRARY_PLUGIN_NAME = "com.android.library"
     private static final String CONFIGURATION_NAME = "internalize"
-    private static final String ARTIFACT_TYPE_JAR = "jar"
+    private static final String JAR = "jar"
     private static final String COMPILE_ONLY = "compileOnly"
 
     private Configuration configuration
     private List<ResolvedArtifact> resolvedArtifacts
+    private List<File> resolvedFiles
 
     @Override
     void apply(Project project) {
@@ -27,8 +25,9 @@ class FatJarPlugin implements Plugin<Project> {
         buildCompileOnlyDependencies(project, configuration)
         project.afterEvaluate {
             resolvedArtifacts = findAllResolvedArtifacts(configuration)
+            resolvedFiles = findAllUnResolvedFiles(configuration)
             project.android.libraryVariants.all { variant ->
-                FatJarProcessor processor = new FatJarProcessor(project, variant, resolvedArtifacts)
+                FatJarProcessor processor = new FatJarProcessor(project, variant, resolvedArtifacts, resolvedFiles)
                 processor.process()
             }
         }
@@ -63,14 +62,31 @@ class FatJarPlugin implements Plugin<Project> {
     private static List<ResolvedArtifact> findAllResolvedArtifacts(Configuration configuration) {
         List<ResolvedArtifact> resolvedArtifacts = new ArrayList<>()
         configuration.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-            if (artifact.type == ARTIFACT_TYPE_JAR) {
+            if (artifact.type == JAR) {
                 LoggingUtils.println("[Artifact] ${artifact.moduleVersion.id}")
             } else {
+                LoggingUtils.println("Not supported artifact type detected : ${artifact.type}")
                 throw new ProjectConfigurationException("Not supported artifact type detected : ${artifact.type}", null)
             }
 
             resolvedArtifacts.add(artifact)
         }
         return resolvedArtifacts
+    }
+
+    private static List<File> findAllUnResolvedFiles(Configuration configuration) {
+        List<File> resolvedFiles = new ArrayList<>()
+        configuration.resolvedConfiguration.files.each { file ->
+            String extension = FileUtils.getFileExtension(file)
+            if (extension == JAR) {
+                LoggingUtils.println("[File] ${file.name}")
+            } else {
+                LoggingUtils.println("Not supported file type detected : $extension")
+                throw new ProjectConfigurationException("Not supported file type detected : $extension", null)
+            }
+
+            resolvedFiles.add(file)
+        }
+        return resolvedFiles
     }
 }
