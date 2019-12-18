@@ -34,8 +34,7 @@ Change `implementation` or `api` to `internalize` while you want to embed the de
 ```gradle
 dependencies {
     // Local dependency
-    internalize project(":library")
-    internalize(name:"fantastic_library", ext:"jar")
+    internalize files("fantastic_library.jar")
     
     // Remote dependency
     internalize "com.google.code.gson:gson:1.+"
