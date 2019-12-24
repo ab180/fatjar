@@ -55,12 +55,9 @@ repackage {
 }
 ```
 
-## TODO
-
-- Mixing [JarJar][1] library inside like [ShadowJar][2]
-
 ## Thanks
 
+- [JarJar][1]
 - [android-fat-aar][3]
 - [fat-aar-plugin][4]
 - [fat-aar-android][5]
