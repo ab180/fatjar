@@ -1,6 +1,7 @@
 package co.ab180.fatjar
 
 import org.gradle.api.logging.Logger
+
 import java.lang.ref.WeakReference
 
 class LoggingUtils {

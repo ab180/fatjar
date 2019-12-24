@@ -3,31 +3,35 @@ package co.ab180.fatjar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.ProjectConfigurationException
-import org.gradle.api.artifacts.*
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.DependencyResolutionListener
+import org.gradle.api.artifacts.ResolvableDependencies
+import org.gradle.api.artifacts.ResolvedArtifact
 
 class FatJarPlugin implements Plugin<Project> {
 
     private static final String ANDROID_LIBRARY_PLUGIN_NAME = "com.android.library"
+    private static final String EXTENSION_NAME = "repackage"
     private static final String CONFIGURATION_NAME = "internalize"
     private static final String JAR = "jar"
     private static final String COMPILE_ONLY = "compileOnly"
 
     private Configuration configuration
+    private RepackageExtension extension
     private List<ResolvedArtifact> resolvedArtifacts
-    private List<File> resolvedFiles
 
     @Override
     void apply(Project project) {
         LoggingUtils.init(project.logger)
         TaskUtils.init(project)
         validateAndroidPluginIncluded(project)
+        extension = createExtension(project)
         configuration = createConfiguration(project)
         buildCompileOnlyDependencies(project, configuration)
         project.afterEvaluate {
             resolvedArtifacts = findAllResolvedArtifacts(configuration)
-            resolvedFiles = findAllUnResolvedFiles(configuration)
             project.android.libraryVariants.all { variant ->
-                FatJarProcessor processor = new FatJarProcessor(project, variant, resolvedArtifacts, resolvedFiles)
+                FatJarProcessor processor = new FatJarProcessor(project, variant, resolvedArtifacts, extension.getRules())
                 processor.process()
             }
         }
@@ -39,16 +43,20 @@ class FatJarPlugin implements Plugin<Project> {
         }
     }
 
+    private static RepackageExtension createExtension(Project project) {
+        return project.extensions.create(EXTENSION_NAME, RepackageExtension, project)
+    }
+
     private static Configuration createConfiguration(Project project) {
         return project.configurations.create(CONFIGURATION_NAME)
     }
 
-    private static void buildCompileOnlyDependencies(Project project, Configuration config) {
+    private static void buildCompileOnlyDependencies(Project project, Configuration configuration) {
         project.gradle.addListener(new DependencyResolutionListener() {
             @Override
             void beforeResolve(ResolvableDependencies dependencies) {
                 // Add compileOnly artifact for IDE
-                config.dependencies.each { dependency ->
+                configuration.dependencies.each { dependency ->
                     project.dependencies.add(COMPILE_ONLY, dependency)
                 }
                 project.gradle.removeListener(this)
@@ -72,21 +80,5 @@ class FatJarPlugin implements Plugin<Project> {
             resolvedArtifacts.add(artifact)
         }
         return resolvedArtifacts
-    }
-
-    private static List<File> findAllUnResolvedFiles(Configuration configuration) {
-        List<File> resolvedFiles = new ArrayList<>()
-        configuration.resolvedConfiguration.files.each { file ->
-            String extension = FileUtils.getFileExtension(file)
-            if (extension == JAR) {
-                LoggingUtils.println("[File] ${file.name}")
-            } else {
-                LoggingUtils.println("Not supported file type detected : $extension")
-                throw new ProjectConfigurationException("Not supported file type detected : $extension", null)
-            }
-
-            resolvedFiles.add(file)
-        }
-        return resolvedFiles
     }
 }

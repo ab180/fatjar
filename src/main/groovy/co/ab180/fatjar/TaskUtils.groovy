@@ -1,6 +1,9 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
+import com.tonicsystems.jarjar.MainProcessor
+import com.tonicsystems.jarjar.Rule
+import com.tonicsystems.jarjar.util.StandaloneJarProcessor
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -80,6 +83,18 @@ class TaskUtils {
                     into libsDir
                 }
             }
+        }
+        return task
+    }
+
+    static Task createRepackageJarTask(Project project, LibraryVariant variant, List<Rule> rules) {
+        Task task = project.tasks.create("repackageJar${variant.name.capitalize()}")
+        task.doFirst {
+            File packagedClassesJarFile = FileUtils.createPackagedClassesJarFile(project, variant)
+            boolean verbose = Boolean.getBoolean("verbose")
+            boolean skipManifest = Boolean.getBoolean("skipManifest")
+            MainProcessor proc = new MainProcessor(rules, verbose, skipManifest)
+            StandaloneJarProcessor.run(packagedClassesJarFile, packagedClassesJarFile, proc)
         }
         return task
     }

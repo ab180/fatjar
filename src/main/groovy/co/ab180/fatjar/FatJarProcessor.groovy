@@ -1,6 +1,7 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
+import com.tonicsystems.jarjar.Rule
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.ResolvedArtifact
@@ -10,11 +11,13 @@ class FatJarProcessor {
     private Project project
     private LibraryVariant variant
     private List<File> jarFiles
+    private List<Rule> rules
 
-    FatJarProcessor(Project project, LibraryVariant variant, List<ResolvedArtifact> resolvedArtifacts, List<File> resolvedFiles) {
+    FatJarProcessor(Project project, LibraryVariant variant, List<ResolvedArtifact> resolvedArtifacts, List<Rule> rules) {
         this.project = project
         this.variant = variant
-        this.jarFiles = new ArrayList<>(resolvedFiles)
+        this.jarFiles = new ArrayList<>()
+        this.rules = new ArrayList<>(rules)
         for (artifact in resolvedArtifacts) {
             File file = artifact.file
             if (file.exists()) {
@@ -51,11 +54,15 @@ class FatJarProcessor {
         }
 
         Task javaCompileTask = TaskUtils.findJavaCompileTask(variant)
+        Task bundleTask = TaskUtils.findBundleTask(variant)
         Task mergeClassesTask = TaskUtils.createMergeClassesTask(project, variant, jarFiles)
+        Task repackageJarTask = TaskUtils.createRepackageJarTask(project, variant, rules)
 
         // Create task dependency
-        syncLibJarsTask.dependsOn(mergeClassesTask)
         mergeClassesTask.dependsOn(javaCompileTask)
+        syncLibJarsTask.dependsOn(mergeClassesTask)
+        repackageJarTask.dependsOn(syncLibJarsTask)
+        bundleTask.dependsOn(repackageJarTask)
     }
 
     private static void validateAndroidGradleToolVersion(String version) {

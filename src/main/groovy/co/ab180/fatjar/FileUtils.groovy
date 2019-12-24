@@ -24,6 +24,11 @@ class FileUtils {
         return project.file(path)
     }
 
+    static File createPackagedClassesJarFile(Project project, LibraryVariant variant) {
+        String path = "${project.buildDir.path}/$INTERMEDIATES/$PACKAGED_CLASSES/${variant.dirName}/classes.jar"
+        return project.file(path)
+    }
+
     static String getFileExtension(File file) {
         String name = file.getName()
         int lastIndexOf = name.lastIndexOf(".")
