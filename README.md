@@ -4,9 +4,9 @@
 
 ## Getting started
 
-### Step 1: Apply plugin
+### Step 1 : Apply plugin
 
-Add snippet below to your root build script file:
+Add snippet below to your root build script file.
 
 ```gradle
 buildscript {
@@ -27,9 +27,9 @@ Add snippet below to the `build.gradle` of your android library:
 apply plugin: "co.ab180.fatjar"
 ```
 
-### Step 2: Internalize dependencies
+### Step 2 : Internalize dependencies
 
-Change `implementation` or `api` to `internalize` while you want to embed the dependency in the library. Like this:
+Change `implementation` or `api` to `internalize` while you want to embed the dependency in the library.
 
 ```gradle
 dependencies {
@@ -42,6 +42,18 @@ dependencies {
 ```
 
 > FatJar currently support `.jar` extension under the `com.android.library` plugin only
+
+### Optional : Change package name
+
+Add repackage scope into `build.gradle` file.
+
+```gradle
+repackage {
+    def prefix = "com.mycompany"
+    relocate "com.google.gson.**", "$prefix.com.google.gson.@1"
+    relocate "kotlin.**", "$prefix.kotlin.@1"
+}
+```
 
 ## TODO
 
