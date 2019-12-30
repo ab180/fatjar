@@ -16,6 +16,10 @@ class PathUtils {
         return "bundle${variant.name.capitalize()}Aar"
     }
 
+    static String buildBundleLibRuntimeTaskPath(LibraryVariant variant) {
+        return "bundleLibRuntime${variant.name.capitalize()}"
+    }
+
     static String transformClassesAndResourcesWithSyncLibJarsTask(LibraryVariant variant) {
         return "transformClassesAndResourcesWithSyncLibJarsFor${variant.name.capitalize()}"
     }

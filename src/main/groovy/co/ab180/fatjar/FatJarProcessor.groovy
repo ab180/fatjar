@@ -63,6 +63,11 @@ class FatJarProcessor {
         syncLibJarsTask.dependsOn(mergeClassesTask)
         repackageJarTask.dependsOn(syncLibJarsTask)
         bundleTask.dependsOn(repackageJarTask)
+
+        // Runtime
+        Task mergeClassesRuntimeTask = TaskUtils.createMergeClassesRuntimeTask(project, variant, jarFiles)
+        Task bundleLibRuntimeTask = TaskUtils.findBundleLibRuntimeTask(variant)
+        bundleLibRuntimeTask.dependsOn(mergeClassesRuntimeTask)
     }
 
     private static void validateAndroidGradleToolVersion(String version) {

@@ -42,6 +42,16 @@ class TaskUtils {
         return bundleTask
     }
 
+    static Task findBundleLibRuntimeTask(LibraryVariant variant) {
+        Project project = projectRef.get()
+        if (project == null) {
+            return null
+        }
+
+        String taskPath = PathUtils.buildBundleLibRuntimeTaskPath(variant)
+        return project.tasks.findByPath(taskPath)
+    }
+
     static Task findTransformClassesAndResourcesWithSyncLibJars(LibraryVariant variant) {
         Project project = projectRef.get()
         if (project == null) {
@@ -58,6 +68,17 @@ class TaskUtils {
 
     static Task createMergeClassesTask(Project project, LibraryVariant variant, List<File> jarFiles) {
         Task task = project.tasks.create("mergeClasses${variant.name.capitalize()}")
+        applyMergeClassesTask(project, variant, task, jarFiles)
+        return task
+    }
+
+    static Task createMergeClassesRuntimeTask(Project project, LibraryVariant variant, List<File> jarFiles) {
+        Task task = project.tasks.create("mergeClassesRuntime${variant.name.capitalize()}")
+        applyMergeClassesTask(project, variant, task, jarFiles)
+        return task
+    }
+
+    private static void applyMergeClassesTask(Project project, LibraryVariant variant, Task task, List<File> jarFiles) {
         task.doFirst {
             File classesDir = FileUtils.createClassesDirFile(project, variant)
             for (jarFile in jarFiles) {
@@ -69,7 +90,6 @@ class TaskUtils {
                 }
             }
         }
-        return task
     }
 
     static Task createMergeJarsTask(Project project, LibraryVariant variant, List<File> jarFiles) {
