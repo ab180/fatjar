@@ -4,8 +4,11 @@ import com.android.build.gradle.api.LibraryVariant
 import com.tonicsystems.jarjar.MainProcessor
 import com.tonicsystems.jarjar.Rule
 import com.tonicsystems.jarjar.util.StandaloneJarProcessor
+import groovy.io.FileType
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.FileTree
+import org.gradle.api.tasks.bundling.Zip
 
 import java.lang.ref.WeakReference
 
@@ -107,13 +110,35 @@ class TaskUtils {
         return task
     }
 
+    static Task createExcludeAllMetaInfoInMergedJarsTask(Project project, LibraryVariant variant) {
+        Task task = project.tasks.create("excludeAllMetaInfoInMergedJars${variant.name.capitalize()}")
+        task.doFirst {
+            File libsDir = FileUtils.createLibsDirFile(project, variant)
+            libsDir.eachFileMatch(FileType.FILES, ~/^.*-.*?.jar$/) { jarFile ->
+                LoggingUtils.println("Unzipping '${jarFile.path}'")
+                JarUtils.excludeMetaInfo(project, jarFile)
+            }
+        }
+        return task
+    }
+
     static Task createRepackageJarTask(Project project, LibraryVariant variant, List<Rule> rules) {
         Task task = project.tasks.create("repackageJar${variant.name.capitalize()}")
         task.doFirst {
-            File packagedClassesJarFile = FileUtils.createPackagedClassesJarFile(project, variant)
             boolean verbose = Boolean.getBoolean("verbose")
             boolean skipManifest = Boolean.getBoolean("skipManifest")
             MainProcessor proc = new MainProcessor(rules, verbose, skipManifest)
+
+            // Repackage '/libs' jar files
+            File libsDir = FileUtils.createLibsDirFile(project, variant)
+            libsDir.eachFileMatch(FileType.FILES, ~/^.*-.*?.jar$/) { jarFile ->
+                LoggingUtils.println("Repackage to '${jarFile.path}'")
+                StandaloneJarProcessor.run(jarFile, jarFile, proc)
+            }
+
+            // Repackage 'classes' jar file
+            File packagedClassesJarFile = FileUtils.createPackagedClassesJarFile(project, variant)
+            LoggingUtils.println("Repackage to '${packagedClassesJarFile.path}'")
             StandaloneJarProcessor.run(packagedClassesJarFile, packagedClassesJarFile, proc)
         }
         return task

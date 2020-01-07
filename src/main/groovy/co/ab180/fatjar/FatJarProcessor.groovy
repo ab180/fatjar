@@ -53,15 +53,15 @@ class FatJarProcessor {
             throw new RuntimeException("Task not found :: transformClassesAndResourcesWithSyncLibJarsTask")
         }
 
-        Task javaCompileTask = TaskUtils.findJavaCompileTask(variant)
         Task bundleTask = TaskUtils.findBundleTask(variant)
-        Task mergeClassesTask = TaskUtils.createMergeClassesTask(project, variant, jarFiles)
+        Task mergeJarsTask = TaskUtils.createMergeJarsTask(project, variant, jarFiles)
+        Task excludeMetaInfoTask = TaskUtils.createExcludeAllMetaInfoInMergedJarsTask(project, variant)
         Task repackageJarTask = TaskUtils.createRepackageJarTask(project, variant, rules)
 
         // Create task dependency
-        mergeClassesTask.dependsOn(javaCompileTask)
-        syncLibJarsTask.dependsOn(mergeClassesTask)
-        repackageJarTask.dependsOn(syncLibJarsTask)
+        mergeJarsTask.mustRunAfter(syncLibJarsTask)
+        excludeMetaInfoTask.dependsOn(mergeJarsTask)
+        repackageJarTask.dependsOn(excludeMetaInfoTask)
         bundleTask.dependsOn(repackageJarTask)
 
         // Runtime
