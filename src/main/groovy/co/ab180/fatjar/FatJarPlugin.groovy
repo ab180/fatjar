@@ -12,13 +12,15 @@ class FatJarPlugin implements Plugin<Project> {
 
     private static final String ANDROID_LIBRARY_PLUGIN_NAME = "com.android.library"
     private static final String EXTENSION_NAME = "repackage"
-    private static final String CONFIGURATION_NAME = "internalize"
+    private static final String INTERNALIZE = "internalize"
+    private static final String INTERNALIZE_ALL = "internalizeAll"
     private static final String JAR = "jar"
     private static final String COMPILE_ONLY = "compileOnly"
 
-    private Configuration configuration
+    private Configuration internalizeConfiguration
+    private Configuration internalizeAllConfiguration
     private RepackageExtension extension
-    private List<ResolvedArtifact> resolvedArtifacts
+    private List<ResolvedArtifact> resolvedArtifacts = new ArrayList<>()
 
     @Override
     void apply(Project project) {
@@ -26,10 +28,16 @@ class FatJarPlugin implements Plugin<Project> {
         TaskUtils.init(project)
         validateAndroidPluginIncluded(project)
         extension = createExtension(project)
-        configuration = createConfiguration(project)
-        buildCompileOnlyDependencies(project, configuration)
+
+        internalizeConfiguration = createConfiguration(project, INTERNALIZE, false)
+        internalizeAllConfiguration = createConfiguration(project, INTERNALIZE_ALL, true)
+
+        buildCompileOnlyDependencies(project, internalizeConfiguration)
+        buildCompileOnlyDependencies(project, internalizeAllConfiguration)
+
         project.afterEvaluate {
-            resolvedArtifacts = findAllResolvedArtifacts(configuration)
+            resolvedArtifacts.addAll(findAllResolvedArtifacts(internalizeConfiguration))
+            resolvedArtifacts.addAll(findAllResolvedArtifacts(internalizeAllConfiguration))
             project.android.libraryVariants.all { variant ->
                 FatJarProcessor processor = new FatJarProcessor(project, variant, resolvedArtifacts, extension.getRules())
                 processor.process()
@@ -47,8 +55,10 @@ class FatJarPlugin implements Plugin<Project> {
         return project.extensions.create(EXTENSION_NAME, RepackageExtension, project)
     }
 
-    private static Configuration createConfiguration(Project project) {
-        return project.configurations.create(CONFIGURATION_NAME)
+    private static Configuration createConfiguration(Project project, String name, boolean transitive) {
+        Configuration configuration = project.configurations.create(name)
+        configuration.transitive = transitive
+        return configuration
     }
 
     private static void buildCompileOnlyDependencies(Project project, Configuration configuration) {
