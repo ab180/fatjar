@@ -38,6 +38,9 @@ dependencies {
     
     // Remote dependency
     internalize "com.google.code.gson:gson:1.+"
+    
+    // When 'transitive=true' is needed
+    internalizeAll org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.+"
 }
 ```
 
@@ -50,8 +53,8 @@ Add repackage scope into `build.gradle` file.
 ```gradle
 repackage {
     def prefix = "com.mycompany"
-    relocate "com.google.gson.**", "$prefix.com.google.gson.@1"
-    relocate "kotlin.**", "$prefix.kotlin.@1"
+    relocate "com.google.gson.**", "${prefix}.com.google.gson.@1"
+    relocate "kotlin.**", "${prefix}.kotlin.@1"
 }
 ```
 
