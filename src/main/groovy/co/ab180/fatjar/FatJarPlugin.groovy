@@ -16,6 +16,7 @@ class FatJarPlugin implements Plugin<Project> {
     private static final String INTERNALIZE_ALL = "internalizeAll"
     private static final String JAR = "jar"
     private static final String COMPILE_ONLY = "compileOnly"
+    private static final String TEST_COMPILE_ONLY = "testCompileOnly"
 
     private Configuration internalizeConfiguration
     private Configuration internalizeAllConfiguration
@@ -68,6 +69,7 @@ class FatJarPlugin implements Plugin<Project> {
                 // Add compileOnly artifact for IDE
                 configuration.dependencies.each { dependency ->
                     project.dependencies.add(COMPILE_ONLY, dependency)
+                    project.dependencies.add(TEST_COMPILE_ONLY, dependency)
                 }
                 project.gradle.removeListener(this)
             }
