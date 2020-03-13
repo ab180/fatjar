@@ -48,20 +48,20 @@ class FatJarProcessor {
     }
 
     private void clearCache() {
-        FileUtils.createLibsDirFile(project, variant).deleteDir()
+        FileUtils.createLibsDirFile(project, variant, gradleToolVersion).deleteDir()
         FileUtils.createClassesDirFile(project, variant).deleteDir()
     }
 
     private void buildClassesWithJars() {
-        Task syncLibJarsTask = TaskUtils.findTransformClassesAndResourcesWithSyncLibJars(variant)
+        Task syncLibJarsTask = TaskUtils.findTransformClassesAndResourcesWithSyncLibJars(variant, gradleToolVersion)
         if (syncLibJarsTask == null) {
             throw new RuntimeException("Task not found :: transformClassesAndResourcesWithSyncLibJarsTask")
         }
 
         Task bundleTask = TaskUtils.findBundleTask(variant)
-        Task mergeJarsTask = TaskUtils.createMergeJarsTask(project, variant, jarFiles)
-        Task excludeMetaInfoTask = TaskUtils.createExcludeAllMetaInfoInMergedJarsTask(project, variant)
-        Task repackageJarTask = TaskUtils.createRepackageJarTask(project, variant, rules)
+        Task mergeJarsTask = TaskUtils.createMergeJarsTask(project, variant, gradleToolVersion, jarFiles)
+        Task excludeMetaInfoTask = TaskUtils.createExcludeAllMetaInfoInMergedJarsTask(project, variant, gradleToolVersion)
+        Task repackageJarTask = TaskUtils.createRepackageJarTask(project, variant, gradleToolVersion, rules)
 
         // Create task dependency
         mergeJarsTask.mustRunAfter(syncLibJarsTask)

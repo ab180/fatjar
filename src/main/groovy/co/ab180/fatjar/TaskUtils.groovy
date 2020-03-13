@@ -1,6 +1,7 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
+import com.g00fy2.versioncompare.Version
 import com.tonicsystems.jarjar.MainProcessor
 import com.tonicsystems.jarjar.Rule
 import com.tonicsystems.jarjar.util.StandaloneJarProcessor
@@ -55,13 +56,13 @@ class TaskUtils {
         return project.tasks.findByPath(taskPath)
     }
 
-    static Task findTransformClassesAndResourcesWithSyncLibJars(LibraryVariant variant) {
+    static Task findTransformClassesAndResourcesWithSyncLibJars(LibraryVariant variant, Version gradleToolVersion) {
         Project project = projectRef.get()
         if (project == null) {
             return null
         }
 
-        String taskPath = PathUtils.transformClassesAndResourcesWithSyncLibJarsTask(variant)
+        String taskPath = PathUtils.transformClassesAndResourcesWithSyncLibJarsTask(variant, gradleToolVersion)
         return project.tasks.findByPath(taskPath)
     }
 
@@ -95,10 +96,10 @@ class TaskUtils {
         }
     }
 
-    static Task createMergeJarsTask(Project project, LibraryVariant variant, List<File> jarFiles) {
+    static Task createMergeJarsTask(Project project, LibraryVariant variant, Version gradleToolVersion, List<File> jarFiles) {
         Task task = project.tasks.create("mergeJars${variant.name.capitalize()}")
         task.doFirst {
-            File libsDir = FileUtils.createLibsDirFile(project, variant)
+            File libsDir = FileUtils.createLibsDirFile(project, variant, gradleToolVersion)
             for (jarFile in jarFiles) {
                 project.copy {
                     LoggingUtils.println("Copy '${jarFile.path}' to '${libsDir.path}'")
@@ -110,10 +111,10 @@ class TaskUtils {
         return task
     }
 
-    static Task createExcludeAllMetaInfoInMergedJarsTask(Project project, LibraryVariant variant) {
+    static Task createExcludeAllMetaInfoInMergedJarsTask(Project project, LibraryVariant variant, Version gradleToolVersion) {
         Task task = project.tasks.create("excludeAllMetaInfoInMergedJars${variant.name.capitalize()}")
         task.doFirst {
-            File libsDir = FileUtils.createLibsDirFile(project, variant)
+            File libsDir = FileUtils.createLibsDirFile(project, variant, gradleToolVersion)
             libsDir.eachFileMatch(FileType.FILES, ~/^.*-.*?.jar$/) { jarFile ->
                 LoggingUtils.println("Unzipping '${jarFile.path}'")
                 JarUtils.excludeMetaInfo(project, jarFile)
@@ -122,7 +123,7 @@ class TaskUtils {
         return task
     }
 
-    static Task createRepackageJarTask(Project project, LibraryVariant variant, List<Rule> rules) {
+    static Task createRepackageJarTask(Project project, LibraryVariant variant, Version gradleToolVersion, List<Rule> rules) {
         Task task = project.tasks.create("repackageJar${variant.name.capitalize()}")
         task.doFirst {
             boolean verbose = Boolean.getBoolean("verbose")
@@ -130,14 +131,14 @@ class TaskUtils {
             MainProcessor proc = new MainProcessor(rules, verbose, skipManifest)
 
             // Repackage '/libs' jar files
-            File libsDir = FileUtils.createLibsDirFile(project, variant)
+            File libsDir = FileUtils.createLibsDirFile(project, variant, gradleToolVersion)
             libsDir.eachFileMatch(FileType.FILES, ~/^.*-.*?.jar$/) { jarFile ->
                 LoggingUtils.println("Repackage to '${jarFile.path}'")
                 StandaloneJarProcessor.run(jarFile, jarFile, proc)
             }
 
             // Repackage 'classes' jar file
-            File packagedClassesJarFile = FileUtils.createPackagedClassesJarFile(project, variant)
+            File packagedClassesJarFile = FileUtils.createPackagedClassesJarFile(project, variant, gradleToolVersion)
             LoggingUtils.println("Repackage to '${packagedClassesJarFile.path}'")
             StandaloneJarProcessor.run(packagedClassesJarFile, packagedClassesJarFile, proc)
         }

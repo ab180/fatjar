@@ -1,17 +1,25 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
+import com.g00fy2.versioncompare.Version
 import org.gradle.api.Project
 
 class FileUtils {
 
+    private static final AAR_LIBS_DIRECTORY = "aar_libs_directory"
+    private static final AAR_MAIN_JAR = "aar_main_jar"
     private static final INTERMEDIATES = "intermediates"
     private static final JAVAC = "javac"
     private static final PACKAGED_CLASSES = "packaged-classes"
 
-    static File createLibsDirFile(Project project, LibraryVariant variant) {
-        String path = "${project.buildDir.path}/$INTERMEDIATES/$PACKAGED_CLASSES/${variant.dirName}/libs"
-        return project.file(path)
+    static File createLibsDirFile(Project project, LibraryVariant variant, Version gradleToolVersion) {
+        if (gradleToolVersion.isAtLeast("3.6.0")) {
+            String path = "${project.buildDir.path}/$INTERMEDIATES/$AAR_LIBS_DIRECTORY/${variant.dirName}/libs"
+            return project.file(path)
+        } else {
+            String path = "${project.buildDir.path}/$INTERMEDIATES/$PACKAGED_CLASSES/${variant.dirName}/libs"
+            return project.file(path)
+        }
     }
 
     static File createClassesDirFile(Project project, LibraryVariant variant) {
@@ -24,9 +32,14 @@ class FileUtils {
         return project.file(path)
     }
 
-    static File createPackagedClassesJarFile(Project project, LibraryVariant variant) {
-        String path = "${project.buildDir.path}/$INTERMEDIATES/$PACKAGED_CLASSES/${variant.dirName}/classes.jar"
-        return project.file(path)
+    static File createPackagedClassesJarFile(Project project, LibraryVariant variant, Version gradleToolVersion) {
+        if (gradleToolVersion.isAtLeast("3.6.0")) {
+            String path = "${project.buildDir.path}/$INTERMEDIATES/$AAR_MAIN_JAR/${variant.dirName}/classes.jar"
+            return project.file(path)
+        } else {
+            String path = "${project.buildDir.path}/$INTERMEDIATES/$PACKAGED_CLASSES/${variant.dirName}/classes.jar"
+            return project.file(path)
+        }
     }
 
     static String getFileExtension(File file) {

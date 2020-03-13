@@ -1,6 +1,7 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
+import com.g00fy2.versioncompare.Version
 
 class PathUtils {
 
@@ -20,7 +21,11 @@ class PathUtils {
         return "bundleLibRuntime${variant.name.capitalize()}"
     }
 
-    static String transformClassesAndResourcesWithSyncLibJarsTask(LibraryVariant variant) {
-        return "transformClassesAndResourcesWithSyncLibJarsFor${variant.name.capitalize()}"
+    static String transformClassesAndResourcesWithSyncLibJarsTask(LibraryVariant variant, Version gradleToolVersion) {
+        if (gradleToolVersion.isAtLeast("3.6.0")) {
+            return "sync${variant.name.capitalize()}LibJars"
+        } else {
+            return "transformClassesAndResourcesWithSyncLibJarsFor${variant.name.capitalize()}"
+        }
     }
 }
