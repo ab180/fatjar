@@ -1,6 +1,7 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
+import com.g00fy2.versioncompare.Version
 import com.tonicsystems.jarjar.Rule
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -12,6 +13,7 @@ class FatJarProcessor {
     private LibraryVariant variant
     private List<File> jarFiles
     private List<Rule> rules
+    private Version gradleToolVersion
 
     FatJarProcessor(Project project, LibraryVariant variant, List<ResolvedArtifact> resolvedArtifacts, List<Rule> rules) {
         this.project = project
@@ -27,7 +29,10 @@ class FatJarProcessor {
 
         project.rootProject.buildscript.getConfigurations().getByName("classpath").getDependencies().each { dependency ->
             if (dependency.group == "com.android.tools.build" && dependency.name == "gradle") {
-                validateAndroidGradleToolVersion(dependency.version)
+                gradleToolVersion = new Version(dependency.version)
+                if (gradleToolVersion.isLowerThan("3.5.0")) {
+                    throw new RuntimeException("FatJar only support 'com.android.tools.build' version above 3.5.0")
+                }
             }
         }
     }
@@ -68,19 +73,5 @@ class FatJarProcessor {
         Task mergeClassesRuntimeTask = TaskUtils.createMergeClassesRuntimeTask(project, variant, jarFiles)
         Task bundleLibRuntimeTask = TaskUtils.findBundleLibRuntimeTask(variant)
         bundleLibRuntimeTask.dependsOn(mergeClassesRuntimeTask)
-    }
-
-    private static void validateAndroidGradleToolVersion(String version) {
-        String[] versionSplits = version.split("[._]")
-        Integer major = versionSplits[0].toInteger()
-        Integer minor = versionSplits[1].toInteger()
-
-        if (major < 3) {
-            throw new RuntimeException("FatJar only support 'com.android.tools.build' version above 3.5.0")
-        } else {
-            if (minor < 5) {
-                throw new RuntimeException("FatJar only support 'com.android.tools.build' version above 3.5.0")
-            }
-        }
     }
 }

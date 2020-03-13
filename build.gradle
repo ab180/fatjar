@@ -28,6 +28,7 @@ dependencies {
     implementation localGroovy()
     implementation "com.android.tools.build:gradle:3.4.1"
     implementation "org.zeroturnaround:zt-zip:1.13"
+    implementation "com.g00fy2:versioncompare:1.3.4"
 }
 
 uploadArchives {
