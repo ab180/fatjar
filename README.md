@@ -46,7 +46,7 @@ dependencies {
 
 > FatJar currently support `.jar` extension under the `com.android.library` plugin only
 
-### Optional : Change package name
+### Optional : Change package name (Shadow)
 
 Add repackage scope into `build.gradle` file.
 
