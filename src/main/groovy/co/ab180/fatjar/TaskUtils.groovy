@@ -46,13 +46,13 @@ class TaskUtils {
         return bundleTask
     }
 
-    static Task findBundleLibRuntimeTask(LibraryVariant variant) {
+    static Task findBundleLibRuntimeTask(LibraryVariant variant, Version gradleToolVersion) {
         Project project = projectRef.get()
         if (project == null) {
             return null
         }
 
-        String taskPath = PathUtils.buildBundleLibRuntimeTaskPath(variant)
+        String taskPath = PathUtils.buildBundleLibRuntimeTaskPath(variant, gradleToolVersion)
         return project.tasks.findByPath(taskPath)
     }
 

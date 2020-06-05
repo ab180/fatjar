@@ -17,8 +17,12 @@ class PathUtils {
         return "bundle${variant.name.capitalize()}Aar"
     }
 
-    static String buildBundleLibRuntimeTaskPath(LibraryVariant variant) {
-        return "bundleLibRuntime${variant.name.capitalize()}"
+    static String buildBundleLibRuntimeTaskPath(LibraryVariant variant, Version gradleToolVersion) {
+        if (gradleToolVersion.isAtLeast("4.0.0")) {
+            return "bundleLibRuntimeToJar${variant.name.capitalize()}"
+        } else {
+            return "bundleLibRuntime${variant.name.capitalize()}"
+        }
     }
 
     static String transformClassesAndResourcesWithSyncLibJarsTask(LibraryVariant variant, Version gradleToolVersion) {

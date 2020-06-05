@@ -71,7 +71,7 @@ class FatJarProcessor {
 
         // Runtime
         Task mergeClassesRuntimeTask = TaskUtils.createMergeClassesRuntimeTask(project, variant, jarFiles)
-        Task bundleLibRuntimeTask = TaskUtils.findBundleLibRuntimeTask(variant)
+        Task bundleLibRuntimeTask = TaskUtils.findBundleLibRuntimeTask(variant, gradleToolVersion)
         bundleLibRuntimeTask.dependsOn(mergeClassesRuntimeTask)
     }
 }
