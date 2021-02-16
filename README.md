@@ -1,6 +1,6 @@
 # FatJar
 
-[![Download](https://api.bintray.com/packages/ab180/gradle-plugin/fatjar/images/download.svg)](https://bintray.com/ab180/gradle-plugin/fatjar/_latestVersion)
+[![Download](https://img.shields.io/maven-metadata/v?metadataUrl=https://sdk-download.airbridge.io/maven/co/ab180/fatjar/maven-metadata.xml)](https://sdk-download.airbridge.io/maven/co/ab180/fatjar/maven-metadata.xml)
 
 ## Getting started
 
@@ -12,7 +12,7 @@ Add snippet below to your root build script file.
 buildscript {
     repositories {
         maven {
-            url "https://dl.bintray.com/ab180/gradle-plugin"
+            url "https://sdk-download.airbridge.io/maven"
         }
     }
     dependencies {
