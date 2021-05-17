@@ -12,11 +12,11 @@ Add snippet below to your root build script file.
 buildscript {
     repositories {
         maven {
-            url "https://sdk-download.airbridge.io/maven"
+            url "https://jitpack.io"
         }
     }
     dependencies {
-        classpath "co.ab180:fatjar:{$latest_version}"
+        classpath "com.github.ab180:fatjar:{$tag}"
     }
 }
 ```
