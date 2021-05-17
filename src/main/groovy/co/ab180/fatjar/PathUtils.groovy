@@ -1,7 +1,7 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
-import com.g00fy2.versioncompare.Version
+import io.github.g00fy2.versioncompare.Version
 
 class PathUtils {
 
