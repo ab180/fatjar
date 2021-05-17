@@ -1,6 +1,6 @@
 # FatJar
 
-[![Download](https://img.shields.io/maven-metadata/v?metadataUrl=https://sdk-download.airbridge.io/maven/co/ab180/fatjar/maven-metadata.xml)](https://sdk-download.airbridge.io/maven/co/ab180/fatjar/maven-metadata.xml)
+[![](https://jitpack.io/v/ab180/fatjar.svg)](https://jitpack.io/#ab180/fatjar)
 
 ## Getting started
 
