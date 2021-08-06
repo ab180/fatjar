@@ -19,7 +19,7 @@ publishing {
             from(components["java"])
             groupId = "com.github.ab180"
             artifactId = "fatjar"
-            version = "2.0.0"
+            version = "1.7.0"
         }
     }
     repositories {
