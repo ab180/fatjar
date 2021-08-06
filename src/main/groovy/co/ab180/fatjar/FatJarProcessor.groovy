@@ -1,8 +1,8 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
-import io.github.g00fy2.versioncompare.Version
 import com.tonicsystems.jarjar.Rule
+import io.github.g00fy2.versioncompare.Version
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.ResolvedArtifact

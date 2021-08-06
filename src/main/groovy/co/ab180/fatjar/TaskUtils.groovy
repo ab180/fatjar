@@ -1,15 +1,13 @@
 package co.ab180.fatjar
 
 import com.android.build.gradle.api.LibraryVariant
-import io.github.g00fy2.versioncompare.Version
 import com.tonicsystems.jarjar.MainProcessor
 import com.tonicsystems.jarjar.Rule
 import com.tonicsystems.jarjar.util.StandaloneJarProcessor
 import groovy.io.FileType
+import io.github.g00fy2.versioncompare.Version
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.FileTree
-import org.gradle.api.tasks.bundling.Zip
 
 import java.lang.ref.WeakReference
 

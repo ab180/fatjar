@@ -18,7 +18,9 @@ class PathUtils {
     }
 
     static String buildBundleLibRuntimeTaskPath(LibraryVariant variant, Version gradleToolVersion) {
-        if (gradleToolVersion.isAtLeast("4.0.0")) {
+        if (gradleToolVersion.isAtLeast("4.2.0")) {
+            return "bundleLibRuntimeToDir${variant.name.capitalize()}"
+        } else if (gradleToolVersion.isAtLeast("4.0.0")) {
             return "bundleLibRuntimeToJar${variant.name.capitalize()}"
         } else {
             return "bundleLibRuntime${variant.name.capitalize()}"
