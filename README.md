@@ -40,7 +40,7 @@ dependencies {
     internalize "com.google.code.gson:gson:1.+"
     
     // When 'transitive=true' is needed
-    internalizeAll org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.+"
+    internalizeAll "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.+"
 }
 ```
 
